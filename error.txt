@@ -1,0 +1,68 @@
+--- 0 seconds
+
+
+### Cleaning old files (to prevent this, export DEBUG=1) ###
+rm -f *.o test
+rm -f StudentTest*.cpp
+
+
+### Check 3: all tests should pass
+! make -f Makefile test
+clang++-9  -std=c++2a -Werror -Wsign-conversion --compile TestRunner.cpp -o TestRunner.o
+curl https://raw.githubusercontent.com/ShaniShuv/cppm2/master/Test.cpp > StudentTest1.cpp
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  5602  100  5602    0     0  16476      0 --:--:-- --:--:-- --:--:-- 16428
+clang++-9  -std=c++2a -Werror -Wsign-conversion --compile StudentTest1.cpp -o StudentTest1.o
+curl https://raw.githubusercontent.com/Reut-Maslansky/Ariel-CPP--ex2/master/Test.cpp > StudentTest2.cpp
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  8312  100  8312    0     0  27342      0 --:--:-- --:--:-- --:--:-- 27432
+clang++-9  -std=c++2a -Werror -Wsign-conversion --compile StudentTest2.cpp -o StudentTest2.o
+clang++-9  -std=c++2a -Werror -Wsign-conversion --compile Board.cpp -o Board.o
+clang++-9  -std=c++2a -Werror -Wsign-conversion TestRunner.o StudentTest1.o StudentTest2.o Board.o -o test
+! timeout 10 ./test
+[doctest] doctest version is "2.3.7"
+[doctest] run with "--help" for options
+        \\|||||//        _
+        ( O   O )        _
+|--ooO-----(_)----------|_
+|                       |_
+|                       |_
+|     Message Board     |_
+|                       |_
+|                       |_
+|------------------Ooo--|_
+        |__|  |__|       _
+         ||    ||        _
+        ooO    Ooo       _
+
+===============================================================================
+[doctest] test cases:     14 |     14 passed |      0 failed |      0 skipped
+[doctest] assertions:    322 |    322 passed |      0 failed |
+[doctest] Status: SUCCESS!
+--- 15 seconds
+### Score 3: 100
+
+
+### Check 4: clang-tidy should run without warnings in user code
+! timeout 10 make -f Makefile tidy
+clang-tidy Board.cpp -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
+3220 warnings generated.
+Suppressed 3220 warnings (3220 in non-user code).
+Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+--- 21 seconds
+### Score 4: 100
+
+
+### Check 5: valgrind should run without errors
+! timeout 10 make -f Makefile valgrind
+valgrind --leak-check=full --error-exitcode=99 --tool=memcheck -v --leak-check=full --show-leak-kinds=all  --error-exitcode=99 ./test 
+make: *** [Makefile:32: valgrind] Terminated
+*** Command failed. Exit code: 124 ***
+--- 31 seconds
+### Score 5: 0
+
+
+Grade: 80
+
